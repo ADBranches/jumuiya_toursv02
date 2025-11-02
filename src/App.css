@@ -1,0 +1,10 @@
+@import "tailwindcss";
+@reference "tailwindcss";
+
+.logo {
+  @apply w-24 transition-transform duration-300 hover:scale-110;
+}
+
+.card {
+  @apply bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-md transition-all hover:shadow-lg;
+}
