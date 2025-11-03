@@ -1,10 +1,12 @@
 export interface Destination {
-  title?: string;
-  image?: string;
-  description?: string;
-  badge?: string;
-  region?: string;
-  quote?: string;
+  id: number;
   name?: string;
-  cta?: string;
+  title?: string;
+  description?: string;
+  image?: string;
+  location?: string;
+  badge?: string;
+  quote?: string;
+  duration?: string;
+  price?: string;
 }

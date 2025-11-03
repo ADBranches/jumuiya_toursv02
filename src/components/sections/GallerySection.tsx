@@ -1,51 +1,45 @@
-import { useState } from "react";
-import SectionWrapper from "../ui/SectionWrapper";
-import { galleryImages } from "../../utils/constants";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { gallery } from "../../utils/constants";
 
 export default function GallerySection() {
-  const [selected, setSelected] = useState<string | null>(null);
-
   return (
-    <SectionWrapper
+    <section
       id="gallery"
-      title="📸 Gallery Showcase"
-      subtitle="A visual journey through Uganda’s landscapes, wildlife, and people."
+      className="relative py-24 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900"
     >
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-        {galleryImages.map((img, idx) => (
-          <motion.img
-            key={idx}
-            src={img}
-            alt={`Uganda scene ${idx + 1}`}
-            className="rounded-xl cursor-pointer hover:opacity-80 object-cover h-56 w-full"
-            onClick={() => setSelected(img)}
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.3 }}
-          />
+      {/* Background overlay for cinematic tone */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/60 pointer-events-none" />
+
+      <h2 className="relative text-4xl font-extrabold text-center mb-14 bg-gradient-to-r from-green-400 to-yellow-400 bg-clip-text text-transparent drop-shadow-md">
+        Gallery
+      </h2>
+
+      <div className="relative max-w-7xl mx-auto grid sm:grid-cols-2 md:grid-cols-3 gap-8 px-6">
+        {gallery.map((img, i) => (
+          <motion.div
+            key={i}
+            className="relative group rounded-2xl overflow-hidden shadow-2xl border border-white/10 hover:border-green-400/40 transition-all duration-500"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <img
+              src={img.src}
+              alt={img.alt}
+              className="w-full h-80 object-cover brightness-110 contrast-110 saturate-125 group-hover:scale-105 group-hover:brightness-125 transition-transform duration-700"
+              loading="lazy"
+              onError={(e) => {
+                e.currentTarget.src = "/images/placeholder.webp";
+              }}
+            />
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+              <p className="text-white font-semibold text-center text-lg drop-shadow-md">
+                {img.alt}
+              </p>
+            </div>
+          </motion.div>
         ))}
       </div>
-
-      <AnimatePresence>
-        {selected && (
-          <motion.div
-            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelected(null)}
-          >
-            <motion.img
-              src={selected}
-              alt="Expanded gallery view"
-              className="max-h-[90vh] max-w-[90vw] rounded-2xl shadow-2xl"
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.8 }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </SectionWrapper>
+    </section>
   );
 }

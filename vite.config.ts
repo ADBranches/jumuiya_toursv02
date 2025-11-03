@@ -10,4 +10,5 @@ export default defineConfig({
     } as PluginOptions),
     react(),
   ],
+  base: '/',
 })

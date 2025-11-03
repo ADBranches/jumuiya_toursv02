@@ -16,3 +16,11 @@ body {
   background-color: var(--color-bg, #fff);
   color: var(--color-text, #111);
 }
+
+
+html {
+  scroll-behavior: smooth;
+}
+section {
+  scroll-margin-top: 80px;
+}

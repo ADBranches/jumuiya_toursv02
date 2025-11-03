@@ -9,6 +9,17 @@ export default function HeroSection() {
     return () => clearTimeout(timeout);
   }, []);
 
+  // ✅ FIX: define the function inside the component
+  const scrollToDestinations = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const section = document.getElementById("destinations");
+    if (section) {
+      const offset = -80; // adjust based on your navbar height
+      const top = section.getBoundingClientRect().top + window.scrollY + offset;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
+  };
+
   return (
     <section
       id="hero"
@@ -64,12 +75,13 @@ export default function HeroSection() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 1.2 }}
         >
-          <a
-            href="#destinations"
+          {/* ✅ Updated button with click handler */}
+          <button
+            onClick={scrollToDestinations}
             className="px-8 py-4 rounded-xl font-semibold bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-900/30 transition-transform hover:scale-105 active:scale-95"
           >
             Explore Destinations
-          </a>
+          </button>
 
           <a
             href="#contact"
@@ -80,7 +92,9 @@ export default function HeroSection() {
         </motion.div>
       </motion.div>
 
-      {/* 🔹 Floating scroll hint */}
+      {/* 🔹 Bottom fade & scroll hint */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-b from-transparent to-white dark:to-gray-900" />
+
       <motion.div
         className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center text-gray-300"
         initial={{ opacity: 0 }}

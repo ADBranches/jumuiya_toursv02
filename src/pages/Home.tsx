@@ -7,7 +7,7 @@ import AboutSection from "../components/sections/AboutSection";
 import GallerySection from "../components/sections/GallerySection";
 import ContactSection from "../components/sections/ContactSection";
 import FloatingContactButton from "../components/misc/FloatingContactButton";
-import PlanTripModal from "../components/misc/PlanTripModal";
+// import PlanTripModal from "../components/misc/PlanTripModal";
 import ThemeToggle from "../components/misc/ThemeToggle";
 
 export default function Home() {
@@ -35,7 +35,7 @@ export default function Home() {
       <GallerySection />
       <ContactSection />
       <FloatingContactButton />
-      <PlanTripModal />
+      {/* <PlanTripModal /> */}
       <ThemeToggle />
     </main>
   );
