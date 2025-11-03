@@ -36,14 +36,15 @@ export default function BookingConfirmation() {
       {/* ✅ Message */}
       <p className="mt-4 max-w-lg text-gray-600 dark:text-gray-300">
         🎉 Thank you for booking with <strong>Jumuiya Tours</strong>!  
-        We’ve received your request and will contact you shortly to confirm your travel plan.
+        We’ve received your booking and have also sent you a confirmation email.  
+        Our team will contact you shortly to finalize your travel details.
       </p>
 
       {/* ✅ Show Receipt Download if available */}
       {booking?.receiptUrl && (
         <motion.a
           href={booking.receiptUrl}
-          download
+          download="JumuiyaTours_Receipt.pdf"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
@@ -52,6 +53,21 @@ export default function BookingConfirmation() {
           Download Receipt
         </motion.a>
       )}
+      
+      {/* ✅ Booking Details Summary */}
+      <div className="mt-8 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 max-w-md text-left">
+        <h3 className="text-lg font-semibold text-green-700 dark:text-green-300 mb-2">
+          Booking Summary
+        </h3>
+        <ul className="text-gray-700 dark:text-gray-300 text-sm space-y-1">
+          <li><strong>Name:</strong> {booking?.fullName}</li>
+          <li><strong>Email:</strong> {booking?.email}</li>
+          <li><strong>Tour:</strong> {booking?.tourName || "Not specified"}</li>
+          <li><strong>Travelers:</strong> {booking?.travelers}</li>
+          <li><strong>Payment Method:</strong> {booking?.paymentMethod}</li>
+          {booking?.paid && <li><strong>Amount Paid:</strong> ${booking?.amount || 1500}</li>}
+        </ul>
+      </div>
 
       {/* ✅ Action Buttons */}
       <div className="mt-8 flex flex-wrap justify-center gap-4">

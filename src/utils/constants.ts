@@ -9,6 +9,7 @@ export const destinations = [
       "Home to half of the world’s mountain gorillas and a UNESCO World Heritage Site.",
     image: "/src/assets/images/bwindi.webp",
     location: "Southwestern Uganda",
+    price: 1200,
   },
   {
     id: 2,
@@ -17,6 +18,7 @@ export const destinations = [
       "Uganda’s largest park, where the Nile explodes through a narrow gorge to form the falls.",
     image: "/src/assets/images/murchison.webp",
     location: "Northwestern Uganda",
+    price: 950,
   },
   {
     id: 3,
@@ -25,6 +27,7 @@ export const destinations = [
       "Famous for tree-climbing lions, volcanic crater lakes, and diverse wildlife.",
     image: "/src/assets/images/queen-elizabeth.webp",
     location: "Western Uganda",
+    price: 1100,
   },
   {
     id: 4,
@@ -33,6 +36,7 @@ export const destinations = [
       "A serene lake surrounded by terraced hills — perfect for relaxation and canoeing.",
     image: "/src/assets/images/lake-bunyonyi.webp",
     location: "Kabale, Southwestern Uganda",
+    price: 850,
   },
   {
     id: 5,
@@ -41,6 +45,7 @@ export const destinations = [
       "Known as the ‘Mountains of the Moon,’ offering Africa’s most scenic alpine hiking.",
     image: "/src/assets/images/rwenzori.webp",
     location: "Kasese District",
+    price: 1600,
   },
   {
     id: 6,
@@ -49,6 +54,7 @@ export const destinations = [
       "A series of beautiful waterfalls at the foothills of Mount Elgon, ideal for hiking.",
     image: "/src/assets/images/sipi-falls.webp",
     location: "Eastern Uganda",
+    price: 700,
   },
 ];
 

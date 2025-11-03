@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import Navbar from "./components/navbar/Navbar";
 import Footer from "./components/footer/Footer";
 import WhatsAppButton from "./components/misc/WhatsAppButton"; // ✅ import added
+import BookingSuccess from "./pages/BookingSuccess";
 
 export default function AppRoutes() {
   return (
@@ -21,6 +22,7 @@ export default function AppRoutes() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
+        <Route path="/booking-success" element={<BookingSuccess />} />
       </Routes>
 
       <Footer />
