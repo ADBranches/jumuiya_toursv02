@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import React from "react";
 import type { Destination } from "../../types/destination";
+import { useBooking } from "../../hooks/useBooking"; // ⬅️ Add this import
 
 interface CardProps {
   data: any;
@@ -15,6 +16,7 @@ const variants = {
 
 const Card: React.FC<CardProps> = ({ data, variant = "destination", onClick }) => {
   if (!data) return null; // Prevent crash if data is undefined
+  const { openBooking } = useBooking();
 
   // Fallback-friendly destructuring
   const {
@@ -99,9 +101,20 @@ const Card: React.FC<CardProps> = ({ data, variant = "destination", onClick }) =
                     💰 {price}
                   </p>
                 )}
-                <button className="inline-block mt-2 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition">
-                  Book Tour
-                </button>
+                {variant === "tour" && (
+                  <button
+                    onClick={() =>
+                      openBooking({
+                        tourName: title || name,
+                        tourId: data.id,
+                        travelers: 1,
+                      })
+                    }
+                    className="inline-block mt-4 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition"
+                  >
+                    Book Tour
+                  </button>
+                )}
               </div>
             )}
 

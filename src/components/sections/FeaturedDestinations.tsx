@@ -4,7 +4,10 @@ import { destinations } from "../../utils/constants";
 
 export default function FeaturedDestinations() {
   return (
-    <section className="pt-32 pb-24 bg-gradient-to-b from-white to-green-50 dark:from-gray-900 dark:to-gray-800">
+    <section
+      id="destinations"
+      className="pt-32 pb-24 bg-gradient-to-b from-white to-green-50 dark:from-gray-900 dark:to-gray-800"
+    >
       <div className="max-w-6xl mx-auto px-4">
         <motion.h2
           className="text-4xl font-extrabold text-center mb-8 text-green-700"
@@ -26,11 +29,7 @@ export default function FeaturedDestinations() {
           From lush rainforests to wildlife parks — discover Uganda’s breathtaking natural diversity.
         </motion.p>
 
-        {/* ✅ The grid now correctly wraps the cards */}
-        <div
-          id="destinations"
-          className="grid sm:grid-cols-2 md:grid-cols-3 gap-8"
-        >
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
           {destinations.map((dest, i) => (
             <motion.div
               key={i}
