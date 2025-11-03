@@ -3,7 +3,7 @@ import BookingConfirmation from "../components/booking/BookingConfirmation";
 import { useState } from "react";
 
 export default function BookingsPage() {
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted] = useState(false);
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900 py-16 px-6">

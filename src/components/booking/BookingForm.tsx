@@ -7,13 +7,18 @@ import { generateReceipt } from "../../services/paymentService";
 import DatePicker from "./DatePicker";
 import BookingSummary from "./BookingSummary";
 import InputField from "../ui/InputField";
+import {
+  validateBookingForm,
+  hasErrors,
+} from "../../utils/validation";
+import type { ValidationError } from "../../utils/validation";
 import type { Booking } from "../../types/booking";
 
 export default function BookingForm() {
   const { booking, updateBooking, resetBooking, closeBooking } = useBooking();
 
   const [step, setStep] = useState(1);
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState<ValidationError[]>([]);
   const [loading, setLoading] = useState(false);
   const [confirmationMsg, setConfirmationMsg] = useState("");
 
@@ -44,47 +49,65 @@ export default function BookingForm() {
 
   // ---------- Helpers ----------
 
-  const handleChange = (field: keyof Booking, value: any) =>
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleChange = (field: keyof Booking, value: any) => {
+    const updated = { ...formData, [field]: value };
+    setFormData(updated);
+    const validation = validateBookingForm(updated);
+    setErrors(validation);
+  };
+
+  const fieldError = (field: string) =>
+    errors.find((e) => e.field === field)?.message;
 
   const handleDestinationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = destinations.find((d) => d.name === e.target.value);
     if (selected) {
       const price = (selected as any).price ?? 0;
-      setFormData((prev) => ({
-        ...prev,
+      const updated = {
+        ...formData,
         tourName: selected.name,
-        amount: price * (prev.travelers || 1),
-      }));
+        amount: price * (formData.travelers || 1),
+      };
+      setFormData(updated);
+      setErrors(validateBookingForm(updated));
     }
   };
 
   const handleTravelersChange = (value: number) => {
-    setFormData((prev) => {
-      const selected = destinations.find((d) => d.name === prev.tourName);
-      const basePrice = selected ? (selected as any).price ?? 0 : 0;
-      return { ...prev, travelers: value, amount: basePrice * value };
-    });
+    const selected = destinations.find((d) => d.name === formData.tourName);
+    const basePrice = selected ? (selected as any).price ?? 0 : 0;
+    const updated = { ...formData, travelers: value, amount: basePrice * value };
+    setFormData(updated);
+    setErrors(validateBookingForm(updated));
   };
 
-  const goNextStep = () => setStep((prev) => Math.min(prev + 1, 4));
+  const goNextStep = () => {
+    const stepValidation = validateBookingForm(formData);
+    if (hasErrors(stepValidation)) {
+      setErrors(stepValidation);
+      return;
+    }
+    setStep((prev) => Math.min(prev + 1, 4));
+    setErrors([]);
+  };
+
   const goPrevStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
-  // ---------- Submit (mock payment + WhatsApp flow) ----------
+  // ---------- Submit ----------
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors([]);
 
-    const errs = bookingService.validate(formData);
-    if (errs.length > 0) {
-      setErrors(errs);
+    const validation = validateBookingForm(formData);
+    if (hasErrors(validation)) {
+      setErrors(validation);
       return;
     }
 
     const selected = destinations.find((d) => d.name === formData.tourName);
     if (!selected) {
-      setErrors(["Please choose a destination."]);
+      setErrors([{ field: "tourName", message: "Please choose a destination." }]);
       return;
     }
 
@@ -93,11 +116,14 @@ export default function BookingForm() {
 
     if (
       paymentMethod === "visa" &&
-      formData.amount > 0 &&
-      formData.amount < requiredAmount
+      (formData.amount ?? 0) > 0 &&
+      (formData.amount ?? 0) < requiredAmount
     ) {
       setErrors([
-        `Payment Error: Minimum payable amount for ${selected.name} is $${requiredAmount}.`,
+        {
+          field: "amount",
+          message: `Payment Error: Minimum payable amount for ${selected.name} is $${requiredAmount}.`,
+        },
       ]);
       return;
     }
@@ -112,7 +138,6 @@ export default function BookingForm() {
     };
 
     try {
-      // 🔹 Mock payment + generate receipt for both paths
       const receiptUrl = await generateReceipt({
         ...updated,
         paid: paymentMethod === "visa",
@@ -136,7 +161,7 @@ export default function BookingForm() {
           : "🕒 Booking confirmed. Please pay on arrival. Receipt draft prepared."
       );
 
-      // 🔹 Simulated WhatsApp redirect + thank-you flow
+      // WhatsApp notification
       const message = encodeURIComponent(
         `Hello Jumuiya Tours 👋,\n\nI’ve just booked *${finalBooking.tourName}*.\n` +
           `• Name: ${finalBooking.fullName}\n• Travelers: ${finalBooking.travelers}\n` +
@@ -150,23 +175,27 @@ export default function BookingForm() {
         window.open(`https://wa.me/256756775911?text=${message}`, "_blank");
       }, 1500);
 
-      // 🔹 Delay before showing success page
       setTimeout(() => {
         try {
           resetBooking();
           closeBooking();
-          // 🔁 Back to a simple, safe redirect (no Router dependency)
           window.location.href = "/booking-success";
         } catch (err) {
           console.error("Finalization error:", err);
           setErrors([
-            "⚠️ Your booking was saved, but something went wrong while finishing the flow.",
+            {
+              field: "system",
+              message:
+                "⚠️ Your booking was saved, but something went wrong while finishing the flow.",
+            },
           ]);
         }
       }, 3000);
     } catch (err) {
       console.error("Booking submit error:", err);
-      setErrors(["❌ Something went wrong while processing your booking."]);
+      setErrors([
+        { field: "system", message: "❌ Something went wrong while processing your booking." },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -191,7 +220,7 @@ export default function BookingForm() {
       {errors.length > 0 && (
         <div className="bg-red-800/20 text-red-300 p-3 rounded-lg">
           {errors.map((err, i) => (
-            <p key={i}>• {err}</p>
+            <p key={i}>• {err.message}</p>
           ))}
         </div>
       )}
@@ -203,12 +232,14 @@ export default function BookingForm() {
             label="Full Name"
             value={formData.fullName || ""}
             onChange={(e) => handleChange("fullName", e.target.value)}
+            error={fieldError("fullName")}
           />
           <InputField
             label="Email"
             type="email"
             value={formData.email || ""}
             onChange={(e) => handleChange("email", e.target.value)}
+            error={fieldError("email")}
           />
 
           <div>
@@ -230,6 +261,7 @@ export default function BookingForm() {
             label="Phone"
             value={formData.phone || ""}
             onChange={(e) => handleChange("phone", e.target.value)}
+            error={fieldError("phone")}
           />
 
           <InputField
@@ -239,6 +271,7 @@ export default function BookingForm() {
             onChange={(e) =>
               handleTravelersChange(parseInt(e.target.value) || 1)
             }
+            error={fieldError("travelers")}
           />
         </div>
       )}
@@ -275,11 +308,14 @@ export default function BookingForm() {
                 </option>
               ))}
             </select>
+            {fieldError("tourName") && (
+              <p className="text-red-400 text-sm mt-1">{fieldError("tourName")}</p>
+            )}
           </div>
 
-          {formData.amount > 0 && (
+          {(formData.amount ?? 0) > 0 && (
             <p className="text-green-400 font-medium">
-              💰 Total Estimated Cost: ${formData.amount.toLocaleString()}
+              💰 Total Estimated Cost: ${(formData.amount ?? 0).toLocaleString()}
             </p>
           )}
         </div>
@@ -321,12 +357,10 @@ export default function BookingForm() {
             {paymentMethod === "visa" && (
               <div className="mt-4 bg-gray-800 p-4 rounded-lg text-sm text-gray-300">
                 <p>
-                  💳 Payments are simulated for now while the secure gateway is
-                  being finalized.
+                  💳 Payments are simulated for now while the secure gateway is being finalized.
                 </p>
                 <p>
-                  You’ll still receive a downloadable receipt and WhatsApp
-                  follow-up.
+                  You’ll still receive a downloadable receipt and WhatsApp follow-up.
                 </p>
               </div>
             )}

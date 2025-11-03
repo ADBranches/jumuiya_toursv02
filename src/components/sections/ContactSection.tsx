@@ -1,38 +1,68 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import emailjs from "@emailjs/browser";
+import {
+  validateContactForm,
+  hasErrors,
+} from "../../utils/validation";
+import type {ValidationError,} from "../../utils/validation";
 
 export default function ContactSection() {
-  // toggle logic
   const USE_MAILTO_MODE = true;
 
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [errors, setErrors] = useState<ValidationError[]>([]);
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
+    "idle"
+  );
 
+  // -------------------- Input handling --------------------
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => setForm({ ...form, [e.target.name]: e.target.value });
+  ) => {
+    const updated = { ...form, [e.target.name]: e.target.value };
+    setForm(updated);
 
+    // Real-time validation feedback
+    const validation = validateContactForm(updated);
+    setErrors(validation);
+  };
+
+  // -------------------- Form submission --------------------
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const validation = validateContactForm(form);
+    if (hasErrors(validation)) {
+      setErrors(validation);
+      return;
+    }
+
+    setErrors([]);
     setStatus("sending");
 
     const targetEmail = "jumuiyatours101@gmail.com";
     const subject = encodeURIComponent(`Inquiry from ${form.name}`);
-    const body = encodeURIComponent(`${form.message}\n\nFrom: ${form.name} (${form.email})`);
+    const body = encodeURIComponent(
+      `${form.message}\n\nFrom: ${form.name} (${form.email})`
+    );
     const mailtoLink = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
 
     console.group("📨 Jumuiya Tours | Contact Form Log");
     console.log("Sender:", form.name);
     console.log("Email:", form.email);
     console.log("Message:", form.message);
-    console.log("Attempt mode:", USE_MAILTO_MODE ? "Mail App" : "EmailJS direct");
+    console.log(
+      "Attempt mode:",
+      USE_MAILTO_MODE ? "Mail App" : "EmailJS direct"
+    );
     console.groupEnd();
 
     if (USE_MAILTO_MODE) {
       try {
         window.location.href = mailtoLink;
-        // Detect if the client probably has no handler
+
+        // Fallback detection
         setTimeout(async () => {
           const fallback =
             document.hasFocus() || navigator.userAgent.includes("Linux");
@@ -52,7 +82,7 @@ export default function ContactSection() {
     }
   };
 
-  // ---------- EmailJS sending ----------
+  // -------------------- EmailJS fallback --------------------
   const sendViaEmailJS = async () => {
     try {
       await emailjs.send(
@@ -79,6 +109,11 @@ export default function ContactSection() {
     }
   };
 
+  // -------------------- Helper for inline errors --------------------
+  const fieldError = (field: string) =>
+    errors.find((e) => e.field === field)?.message;
+
+  // -------------------- UI --------------------
   return (
     <section
       id="contact"
@@ -98,40 +133,79 @@ export default function ContactSection() {
           Have a question or want to plan your next adventure? We’re here to help.
         </p>
 
+        {/* Error banner */}
+        {errors.length > 0 && (
+          <div className="bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 rounded-lg p-4 mb-6 text-left">
+            <ul className="list-disc list-inside">
+              {errors.map((err, i) => (
+                <li key={i}>{err.message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <motion.form
           onSubmit={handleSubmit}
           className="bg-white dark:bg-gray-900 shadow-xl rounded-2xl p-8 space-y-6 border border-gray-100 dark:border-gray-800"
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <input
-              type="text"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-              placeholder="Your Name"
-              className="p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none text-gray-800 dark:text-gray-100"
-            />
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-              placeholder="Your Email"
-              className="p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none text-gray-800 dark:text-gray-100"
-            />
+            {/* Name */}
+            <div className="text-left">
+              <input
+                type="text"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="Your Name"
+                className={`p-4 w-full bg-gray-50 dark:bg-gray-800 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none text-gray-800 dark:text-gray-100 ${
+                  fieldError("name")
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 dark:border-gray-700"
+                }`}
+              />
+              {fieldError("name") && (
+                <p className="text-red-500 text-sm mt-1">{fieldError("name")}</p>
+              )}
+            </div>
+
+            {/* Email */}
+            <div className="text-left">
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="Your Email"
+                className={`p-4 w-full bg-gray-50 dark:bg-gray-800 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none text-gray-800 dark:text-gray-100 ${
+                  fieldError("email")
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 dark:border-gray-700"
+                }`}
+              />
+              {fieldError("email") && (
+                <p className="text-red-500 text-sm mt-1">{fieldError("email")}</p>
+              )}
+            </div>
           </div>
 
-          <textarea
-            name="message"
-            value={form.message}
-            onChange={handleChange}
-            required
-            placeholder="Your Message"
-            rows={5}
-            className="w-full p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none text-gray-800 dark:text-gray-100"
-          />
+          {/* Message */}
+          <div className="text-left">
+            <textarea
+              name="message"
+              value={form.message}
+              onChange={handleChange}
+              placeholder="Your Message"
+              rows={5}
+              className={`w-full p-4 bg-gray-50 dark:bg-gray-800 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none text-gray-800 dark:text-gray-100 ${
+                fieldError("message")
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 dark:border-gray-700"
+              }`}
+            />
+            {fieldError("message") && (
+              <p className="text-red-500 text-sm mt-1">{fieldError("message")}</p>
+            )}
+          </div>
 
           {/* Feedback status */}
           {status === "sending" && (
@@ -145,7 +219,10 @@ export default function ContactSection() {
           {status === "error" && (
             <p className="text-sm text-red-400 font-semibold">
               ⚠️ Something went wrong. Please email us directly at{" "}
-              <a href="mailto:jumuiyatours101@gmail.com" className="underline text-green-400">
+              <a
+                href="mailto:jumuiyatours101@gmail.com"
+                className="underline text-green-400"
+              >
                 jumuiyatours101@gmail.com
               </a>
               .

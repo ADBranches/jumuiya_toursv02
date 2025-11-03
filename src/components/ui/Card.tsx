@@ -4,9 +4,10 @@ import type { Destination } from "../../types/destination";
 import { useBooking } from "../../hooks/useBooking"; // ⬅️ Add this import
 
 interface CardProps {
-  data: any;
+  data?: any;
   onClick?: () => void;
   variant?: "destination" | "tour" | "testimonial" | "gallery";
+  destination?: Destination;
 }
 
 const variants = {

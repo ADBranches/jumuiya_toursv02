@@ -6,6 +6,7 @@ interface InputFieldProps {
   type?: string;
   placeholder?: string;
   textarea?: boolean;
+  error?: string;
 }
 
 export default function InputField({
@@ -18,7 +19,7 @@ export default function InputField({
   textarea = false,
 }: InputFieldProps) {
   const safeValue = value ?? ""; // ✅ double safety for undefined/null
-
+  
   return (
     <div className="flex flex-col gap-1">
       <label

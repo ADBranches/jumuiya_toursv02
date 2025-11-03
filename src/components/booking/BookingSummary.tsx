@@ -13,7 +13,7 @@ export default function BookingSummary({ data }: Props) {
 
       <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-2 border border-gray-200 dark:border-gray-700">
         <p>
-          <strong>Name:</strong> {data.name}
+          <strong>Name:</strong> {data.fullName}
         </p>
         <p>
           <strong>Email:</strong> {data.email}

@@ -8,5 +8,5 @@ export interface Destination {
   badge?: string;
   quote?: string;
   duration?: string;
-  price?: string;
+  price?: string | number;
 }

@@ -1,29 +1,23 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss, { type PluginOptions } from '@tailwindcss/vite'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  plugins: [
-    tailwindcss({
-      theme: { extend: {} },
-    } as PluginOptions),
-    react(),
-  ],
+  plugins: [tailwindcss(), react()],
+  // ✅ Keep base "/" for a custom root domain
   base: '/',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    emptyOutDir: true,
+     chunkSizeWarningLimit: 1500,
+  },
   server: {
     port: 5173,
     open: true,
-    fs: { strict: false },
-    middlewareMode: false,
-    // ✅ modern fallback syntax for Vite 7+
-    // use "spaFallback" built-in middleware (under the hood of connect-history-api-fallback)
-    watch: {
-      usePolling: true,
-    },
   },
   preview: {
     port: 4173,
     open: true,
   },
-
 })
