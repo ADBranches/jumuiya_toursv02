@@ -132,7 +132,7 @@ export default function HeroSection() {
 
           <button
             onClick={() => scrollToSection("contact")}
-            className="px-8 py-4 rounded-xl font-semibold border border-white/40 hover:bg-white/20 text-white backdrop-blur-sm transition-transform hover:scale-105 active:scale-95 mb-24"
+            className="px-8 py-4 rounded-xl font-semibold border border-white/40 hover:bg-white/20 text-white backdrop-blur-sm transition-transform hover:scale-105 active:scale-95 translate-y-8 md:translate-y-0"
           >
             Contact Us
           </button>
