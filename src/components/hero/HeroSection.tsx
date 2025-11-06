@@ -53,14 +53,22 @@ export default function HeroSection() {
         playsInline
         poster={heroWebp}
         onLoadedData={() => setVideoLoaded(true)}
-        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+        className={`absolute inset-0 w-full transition-opacity duration-700 ${
           videoLoaded ? "opacity-100" : "opacity-0"
         } ${
-          isMobile 
-            ? "scale-125 md:scale-110" // More zoom on mobile, slightly less on tablet
-            : "lg:scale-100 xl:scale-105" // Normal on desktop, slight zoom on large screens
+          isMobile
+            ? "object-contain sm:object-cover"  // ✅ contain on very small screens, cover from sm+
+            : "object-cover"
         }`}
+        style={{
+          height: isMobile ? "100dvh" : "100vh", // ✅ fixes mobile viewport height issues
+          width: "100%",
+          objectPosition: "center center",
+          backgroundColor: "black",
+          maxHeight: "100vh",
+        }}
       >
+      
         <source src={heroVideo} type="video/mp4" />
         <img 
           src={heroFallbackWebp} 
@@ -71,13 +79,13 @@ export default function HeroSection() {
       {/* 🔹 ENHANCED OVERLAY FOR MOBILE READABILITY */}
       <div className={`absolute inset-0 ${
         isMobile 
-          ? "bg-gradient-to-b from-black/80 via-black/60 to-black/40" // 🔥 Darker overlay for mobile
-          : "bg-gradient-to-b from-black/70 via-black/40 to-transparent" // Keep original for desktop
+          ? "bg-gradient-to-b from-black/80 via-black/40 to-black/20"
+          : "bg-gradient-to-b from-black/60 via-black/30 to-transparent"
       }`} />
 
       {/* 🔹 KEEP YOUR EXISTING DESKTOP CONTENT - NO CHANGES */}
       <motion.div
-        className="relative z-10 px-6 text-center max-w-3xl"
+        className="relative z-10 px-6 text-center max-w-3xl mb-16 md:mb-20"
         initial={{ opacity: 0, y: 60 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
@@ -103,7 +111,7 @@ export default function HeroSection() {
 
         {/* 🔹 KEEP ORIGINAL DESKTOP BUTTONS - NO CHANGES */}
         <motion.div
-          className="flex flex-wrap justify-center gap-6"
+          className="flex flex-wrap justify-center gap-6 mt-8 md:mt-10"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 1.2 }}
@@ -124,7 +132,7 @@ export default function HeroSection() {
 
           <button
             onClick={() => scrollToSection("contact")}
-            className="px-8 py-4 rounded-xl font-semibold border border-white/40 hover:bg-white/20 text-white backdrop-blur-sm transition-transform hover:scale-105 active:scale-95"
+            className="px-8 py-4 rounded-xl font-semibold border border-white/40 hover:bg-white/20 text-white backdrop-blur-sm transition-transform hover:scale-105 active:scale-95 mb-24"
           >
             Contact Us
           </button>
