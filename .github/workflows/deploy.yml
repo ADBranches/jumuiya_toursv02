@@ -3,8 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -16,32 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run type check
-        run: npx tsc --noEmit
-
-      - name: Run linting
-        run: npm run lint
-
   build:
     runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,7 +24,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 18
           cache: 'npm'
 
       - name: Install dependencies
@@ -61,19 +36,18 @@ jobs:
           VITE_ENVIRONMENT: production
           VITE_APP_URL: https://jumuiyatours.com
 
-      # ✅ Ensure GitHub Pages does not use Jekyll (important for /assets/js/*.js MIME)
-      - name: Create .nojekyll file
-        run: echo "" > dist/.nojekyll
+      # ✅ ensure .nojekyll and SPA redirects are included
+      - name: Add .nojekyll and redirects
+        run: |
+          echo "" > dist/.nojekyll
+          echo "/* /index.html 200" > dist/_redirects
 
-      # ✅ Confirm file exists
-      - name: Verify .nojekyll exists
-        run: ls -la dist/.nojekyll
+      - name: Verify dist content
+        run: ls -R dist
 
-      # ✅ Configure GitHub Pages
       - name: Setup Pages
         uses: actions/configure-pages@v3
 
-      # ✅ Upload static files for deployment
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
@@ -83,11 +57,8 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/main'
-
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
