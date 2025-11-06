@@ -21,7 +21,8 @@ export default function FloatingContactButton() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-yellow-400 text-black font-medium px-5 py-3 rounded-full shadow-lg hover:bg-yellow-500 transition-all flex items-center gap-2"
+        className="hidden md:hidden lg:hidden"
+        // className="fixed bottom-6 right-6 bg-yellow-400 text-black font-medium px-5 py-3 rounded-full shadow-lg hover:bg-yellow-500 transition-all flex items-center gap-2"
       >
         ✨ Plan Trip
       </button>
