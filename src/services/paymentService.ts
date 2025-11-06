@@ -1,150 +1,27 @@
-// // src/services/paymentService.ts
-// import { jsPDF } from "jspdf";
-// import type { Booking } from "../types/booking";
-
-// /**
-//  * Initiates a real Flutterwave payment and returns receipt info.
-//  * Requires the Flutterwave script in index.html:
-//  *   <script src="https://checkout.flutterwave.com/v3.js"></script>
-//  */
-// export async function initiatePayment(
-//   booking: Booking
-// ): Promise<{ success: boolean; receiptUrl?: string }> {
-//   return new Promise((resolve) => {
-//     const FlutterwaveCheckout = (window as any).FlutterwaveCheckout;
-
-//     if (!FlutterwaveCheckout) {
-//       console.error("❌ Flutterwave script not loaded. Include it in index.html.");
-//       resolve({ success: false });
-//       return;
-//     }
-
-//     FlutterwaveCheckout({
-//       public_key: "FLWPUBK_TEST-xxxxxxxxxxxxxxxxxxxxx-X", // replace with your actual key
-//       tx_ref: `JUM-${Date.now()}`,
-//       amount: booking.amount || 0,
-//       currency: "USD",
-//       payment_options: "card,mobilemoneyuganda,ussd,banktransfer",
-
-//       // ✅ Proper nested customer object (required by Flutterwave)
-//       customer: {
-//         email: booking.email,
-//         name: booking.fullName,
-//         phonenumber: `${booking.countryCode || ""}${booking.phone || ""}`,
-//       },
-
-//       customizations: {
-//         title: "Jumuiya Tours",
-//         description: `Payment for ${booking.tourName || "Tour Package"}`,
-//         logo: "/src/assets/images/logo.png",
-//       },
-
-//       callback: async (response: any) => {
-//         console.log("💳 Payment response:", response);
-
-//         if (response.status === "successful") {
-//           const receiptUrl = await generateReceipt({
-//             ...booking,
-//             paid: true,
-//             amount: booking.amount,
-//           });
-//           resolve({ success: true, receiptUrl });
-//         } else {
-//           resolve({ success: false });
-//         }
-//       },
-
-//       onclose: () => {
-//         console.warn("⚠️ Payment modal closed by user.");
-//         resolve({ success: false });
-//       },
-//     });
-//   });
-// }
-
-// /**
-//  * Generates a downloadable PDF receipt for a successful booking.
-//  */
-// export async function generateReceipt(data: Booking): Promise<string> {
-//   const doc = new jsPDF();
-
-//   // 🔹 Header
-//   doc.setFont("helvetica", "bold");
-//   doc.setFontSize(18);
-//   doc.text("Jumuiya Tours — Official Payment Receipt", 20, 20);
-
-//   // 🔹 Booking Info
-//   doc.setFontSize(12);
-//   doc.setFont("helvetica", "normal");
-//   const yStart = 40;
-//   const lines = [
-//     `Receipt ID: JUM-${Date.now()}`,
-//     `Name: ${data.fullName}`,
-//     `Email: ${data.email}`,
-//     `Phone: ${data.countryCode || ""} ${data.phone || ""}`,
-//     `Tour: ${data.tourName || "N/A"}`,
-//     `Travelers: ${data.travelers}`,
-//     `Payment Method: ${data.paymentMethod}`,
-//     `Amount Paid: $${data.amount?.toLocaleString() || "0"}`,
-//     `Payment Status: ${data.paid ? "Paid ✅" : "Pending ⏳"}`,
-//     `Date Issued: ${new Date().toLocaleString()}`,
-//   ];
-//   lines.forEach((line, i) => doc.text(line, 20, yStart + i * 10));
-
-//   // 🔹 Footer
-//   doc.setFontSize(10);
-//   doc.text("Thank you for booking with Jumuiya Tours!", 20, yStart + lines.length * 10 + 15);
-//   doc.text("This is a system-generated receipt — keep it for your records.", 20, yStart + lines.length * 10 + 22);
-//   doc.text("For support: info@jumuiyatours.ug", 20, yStart + lines.length * 10 + 29);
-
-//   // 🔹 Generate blob URL for download
-//   const blob = doc.output("blob");
-//   const url = URL.createObjectURL(blob);
-//   return url;
-// }
-
 // src/services/paymentService.ts
 import { jsPDF } from "jspdf";
+import QRCode from 'qrcode';
 import type { Booking } from "../types/booking";
 
 /**
  * Temporary smart handler: simulates payment when API key or SDK is invalid.
  * Automatically skips real checkout in local/dev environments.
  */
-export async function initiatePayment(
-  booking: Booking
-): Promise<{ success: boolean; receiptUrl?: string }> {
-  return new Promise(async (resolve) => {
-    try {
-      const FlutterwaveCheckout = (window as any).FlutterwaveCheckout;
+export async function initiatePayment(booking: Booking): Promise<{ success: boolean; receiptUrl?: string }> {
+  try {
+    const FlutterwaveCheckout = (window as { FlutterwaveCheckout?: (options: unknown) => void }).FlutterwaveCheckout;
 
-      // 🟡 CASE 1: Missing SDK or invalid public key → auto-simulate
-      if (!FlutterwaveCheckout || booking.amount === 0) {
-        console.warn("⚠️ Flutterwave not loaded — simulating payment success.");
+    if (!FlutterwaveCheckout || booking.amount === 0 || !import.meta.env.VITE_FLW_PUBLIC_KEY) {
+      console.warn("⚠️ Flutterwave not loaded — simulating payment success.");
+      const simulatedReceipt = await generateReceipt({
+        ...booking,
+        paid: true,
+        amount: booking.amount || 0,
+      });
+      return { success: true, receiptUrl: simulatedReceipt };
+    }
 
-        const simulatedReceipt = await generateReceipt({
-          ...booking,
-          paid: true,
-          amount: booking.amount || 0,
-        });
-
-        resolve({ success: true, receiptUrl: simulatedReceipt });
-        return;
-      }
-
-      // 🟢 CASE 2: SDK exists, but still invalid key (fallback safeguard)
-      if (!import.meta.env.VITE_FLW_PUBLIC_KEY) {
-        console.warn("⚠️ No valid public key found, using fallback simulation.");
-        const simulatedReceipt = await generateReceipt({
-          ...booking,
-          paid: true,
-          amount: booking.amount || 0,
-        });
-        resolve({ success: true, receiptUrl: simulatedReceipt });
-        return;
-      }
-
-      // 🧩 CASE 3: Live or real integration (reactivate later)
+    return new Promise((resolve) => {
       FlutterwaveCheckout({
         public_key: import.meta.env.VITE_FLW_PUBLIC_KEY,
         tx_ref: `JUM-${Date.now()}`,
@@ -164,7 +41,7 @@ export async function initiatePayment(
           logo: "/src/assets/images/logo.png",
         },
 
-        callback: async (response: any) => {
+        callback: async (response: { status: string }) => { // ✅ Fixed type
           console.log("💳 Payment response:", response);
           if (response.status === "successful") {
             const receiptUrl = await generateReceipt({
@@ -183,24 +60,65 @@ export async function initiatePayment(
           resolve({ success: false });
         },
       });
-    } catch (err) {
-      console.error("❌ Payment initiation failed:", err);
-      const simulatedReceipt = await generateReceipt({
-        ...booking,
-        paid: true,
-        amount: booking.amount || 0,
-      });
-      resolve({ success: true, receiptUrl: simulatedReceipt });
-    }
-  });
+    });
+  } catch (err) {
+    console.error("❌ Payment initiation failed:", err);
+    const simulatedReceipt = await generateReceipt({
+      ...booking,
+      paid: true,
+      amount: booking.amount || 0,
+    });
+    return { success: true, receiptUrl: simulatedReceipt };
+  }
 }
+
 
 /**
  * Generates a downloadable PDF receipt for a successful booking.
  */
+/**
+ * Generates a downloadable PDF receipt for a successful booking WITH QR CODE.
+ */
 export async function generateReceipt(data: Booking): Promise<string> {
   const doc = new jsPDF();
 
+  // Generate QR code data
+  const qrData = JSON.stringify({
+    bookingId: `JUM-${Date.now()}`,
+    name: data.fullName,
+    tour: data.tourName,
+    travelers: data.travelers,
+    dates: `${data.startDate} to ${data.endDate}`,
+    amount: `$${data.amount?.toLocaleString() || "0"}`,
+    status: data.paid ? "Confirmed" : "Pending",
+    verified: true,
+    timestamp: new Date().toISOString()
+  });
+
+  try {
+    // Generate QR code as data URL
+    const qrCodeDataUrl = await QRCode.toDataURL(qrData, {
+      width: 80,
+      margin: 1,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    });
+
+    // Add QR code to PDF
+    doc.addImage(qrCodeDataUrl, 'PNG', 150, 20, 40, 40);
+    
+    // Add QR code label
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("Scan to verify booking", 150, 65);
+    
+  } catch (error) {
+    console.warn("❌ QR code generation failed, continuing without it:", error);
+  }
+
+  // Rest of your existing receipt content (unchanged)
   doc.setFont("helvetica", "bold");
   doc.setFontSize(18);
   doc.text("Jumuiya Tours — Official Payment Receipt", 20, 20);
@@ -212,7 +130,8 @@ export async function generateReceipt(data: Booking): Promise<string> {
     `Email: ${data.email}`,
     `Tour: ${data.tourName || "N/A"}`,
     `Travelers: ${data.travelers}`,
-    `Amount Paid: $${data.amount?.toLocaleString() || "0"}`,
+    `Dates: ${data.startDate} to ${data.endDate}`,
+    `Amount: $${data.amount?.toLocaleString() || "0"}`,
     `Status: ${data.paid ? "Paid ✅" : "Pending ⏳"}`,
     `Date: ${new Date().toLocaleString()}`,
   ];
@@ -224,4 +143,34 @@ export async function generateReceipt(data: Booking): Promise<string> {
 
   const blob = doc.output("blob");
   return URL.createObjectURL(blob);
+}
+
+
+// ADD THIS FUNCTION TO YOUR EXISTING paymentService.ts
+/**
+ * Triggers download of receipt PDF
+ */
+export function downloadReceipt(receiptUrl: string, fileName = "JumuiyaTours_Receipt.pdf"): boolean {
+  if (!receiptUrl) {
+    console.error("No receipt URL provided for download");
+    return false;
+  }
+
+  try {
+    const link = document.createElement('a');
+    link.href = receiptUrl;
+    link.download = fileName;
+    link.target = '_blank';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    console.log("📥 Download triggered for:", fileName);
+    return true;
+  } catch (error) {
+    console.error("❌ Error triggering download:", error);
+    window.open(receiptUrl, '_blank');
+    return false;
+  }
 }

@@ -1,4 +1,13 @@
 // src/utils/constants.ts
+import bwindiWebp from "../assets/images/bwindi.webp";
+import murchisonWebp from "../assets/images/murchison.webp";
+import queenElizabethWebp from "../assets/images/queen-elizabeth.webp";
+import lakeBunyonyiWebp from "../assets/images/lake-bunyonyi.webp";
+import rwenzoriWebp from "../assets/images/rwenzori.webp";
+import sipiFallsWebp from "../assets/images/sipi-falls.webp";
+import murchisonRhinosWebp from "../assets/images/murchison-rhinos.webp";
+import birdsWebp from "../assets/images/birds.webp";
+import rwenzoriChallengeWebp from "../assets/images/rwenzori-challenge.webp";
 
 // 🏞️ DESTINATIONS
 export const destinations = [
@@ -7,7 +16,7 @@ export const destinations = [
     name: "Bwindi Impenetrable Forest",
     description:
       "Home to half of the world’s mountain gorillas and a UNESCO World Heritage Site.",
-    image: "/src/assets/images/bwindi.webp",
+    image: bwindiWebp,
     location: "Southwestern Uganda",
     price: 1200,
   },
@@ -16,7 +25,7 @@ export const destinations = [
     name: "Murchison Falls National Park",
     description:
       "Uganda’s largest park, where the Nile explodes through a narrow gorge to form the falls.",
-    image: "/src/assets/images/murchison.webp",
+    image: murchisonWebp,
     location: "Northwestern Uganda",
     price: 950,
   },
@@ -25,7 +34,7 @@ export const destinations = [
     name: "Queen Elizabeth National Park",
     description:
       "Famous for tree-climbing lions, volcanic crater lakes, and diverse wildlife.",
-    image: "/src/assets/images/queen-elizabeth.webp",
+    image: birdsWebp,
     location: "Western Uganda",
     price: 1100,
   },
@@ -34,7 +43,7 @@ export const destinations = [
     name: "Lake Bunyonyi",
     description:
       "A serene lake surrounded by terraced hills — perfect for relaxation and canoeing.",
-    image: "/src/assets/images/lake-bunyonyi.webp",
+    image: lakeBunyonyiWebp,
     location: "Kabale, Southwestern Uganda",
     price: 850,
   },
@@ -43,7 +52,7 @@ export const destinations = [
     name: "Rwenzori Mountains",
     description:
       "Known as the ‘Mountains of the Moon,’ offering Africa’s most scenic alpine hiking.",
-    image: "/src/assets/images/rwenzori.webp",
+    image: rwenzoriWebp,
     location: "Kasese District",
     price: 1600,
   },
@@ -52,7 +61,7 @@ export const destinations = [
     name: "Sipi Falls",
     description:
       "A series of beautiful waterfalls at the foothills of Mount Elgon, ideal for hiking.",
-    image: "/src/assets/images/sipi-falls.webp",
+    image: sipiFallsWebp,
     location: "Eastern Uganda",
     price: 700,
   },
@@ -67,7 +76,7 @@ export const tours = [
       "Track endangered mountain gorillas in Bwindi with expert rangers and local guides.",
     price: "$1,200",
     duration: "3 Days / 2 Nights",
-    image: "/src/assets/images/bwindi.webp",
+    image: bwindiWebp,
   },
   {
     id: 2,
@@ -76,7 +85,7 @@ export const tours = [
       "Discover Murchison Falls, cruise the Nile, and meet rhinos at Ziwa Sanctuary.",
     price: "$1,850",
     duration: "5 Days / 4 Nights",
-    image: "/src/assets/images/murchison-rhinos.webp",
+    image: murchisonRhinosWebp,
   },
   {
     id: 3,
@@ -85,7 +94,7 @@ export const tours = [
       "Explore Fort Portal, Queen Elizabeth Park, and crater lakes — a western Uganda gem.",
     price: "$2,300",
     duration: "7 Days / 6 Nights",
-    image: "/src/assets/images/birds.webp",
+    image: queenElizabethWebp,
   },
   {
     id: 4,
@@ -94,7 +103,7 @@ export const tours = [
       "Perfect for hiking, abseiling, and scenic photography — ideal short escape.",
     price: "$600",
     duration: "2 Days / 1 Night",
-    image: "/src/assets/images/sipi-falls.webp",
+    image: sipiFallsWebp,
   },
   {
     id: 5,
@@ -103,7 +112,7 @@ export const tours = [
       "A guided climb through Uganda’s alpine peaks — breathtaking adventure for hikers.",
     price: "$3,500",
     duration: "10 Days / 9 Nights",
-    image: "/src/assets/images/rwenzori-challenge.webp",
+    image: rwenzoriChallengeWebp,
   },
 ];
 
@@ -132,27 +141,27 @@ export const testimonials = [
 // 🖼️ GALLERY (used in GallerySection.tsx)
 export const gallery = [
   {
-    src: "/src/assets/images/bwindi.webp",
+    src: bwindiWebp, 
     alt: "Bwindi Impenetrable Forest",
   },
   {
-    src: "/src/assets/images/murchison.webp",
+    src: murchisonWebp, 
     alt: "Murchison Falls National Park",
   },
   {
-    src: "/src/assets/images/queen-elizabeth.webp",
+    src: queenElizabethWebp, 
     alt: "Queen Elizabeth National Park",
   },
   {
-    src: "/src/assets/images/lake-bunyonyi.webp",
+    src: lakeBunyonyiWebp,  
     alt: "Lake Bunyonyi",
   },
   {
-    src: "/src/assets/images/rwenzori.webp",
+    src: rwenzoriWebp, 
     alt: "Rwenzori Mountains",
   },
   {
-    src: "/src/assets/images/sipi-falls.webp",
+    src: sipiFallsWebp, 
     alt: "Sipi Falls",
   },
 ];

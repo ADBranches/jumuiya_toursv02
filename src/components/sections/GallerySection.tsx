@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { gallery } from "../../utils/constants";
+import placeholderWebp from "../../assets/images/placeholder.webp";
 
 export default function GallerySection() {
   return (
@@ -29,7 +30,7 @@ export default function GallerySection() {
               className="w-full h-80 object-cover brightness-110 contrast-110 saturate-125 group-hover:scale-105 group-hover:brightness-125 transition-transform duration-700"
               loading="lazy"
               onError={(e) => {
-                e.currentTarget.src = "/images/placeholder.webp";
+                e.currentTarget.src = placeholderWebp;
               }}
             />
             <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-4">

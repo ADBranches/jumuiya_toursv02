@@ -41,17 +41,31 @@ export default function BookingConfirmation() {
       </p>
 
       {/* ✅ Show Receipt Download if available */}
+      // REPLACE the existing download section with this:
       {booking?.receiptUrl && (
-        <motion.a
-          href={booking.receiptUrl}
-          download="JumuiyaTours_Receipt.pdf"
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="mt-6 inline-block bg-green-600 text-white py-2 px-5 rounded-lg hover:bg-green-700 shadow-md transition"
+          className="mt-6"
         >
-          Download Receipt
-        </motion.a>
+          <button
+            onClick={() => {
+              import('./../../services/paymentService').then(({ downloadReceipt }) => {
+                downloadReceipt(
+                  booking.receiptUrl!, 
+                  `JumuiyaTours_${booking.tourName}_Receipt.pdf`
+                );
+              });
+            }}
+            className="bg-green-600 text-white py-2 px-5 rounded-lg hover:bg-green-700 shadow-md transition"
+          >
+            📥 Download Receipt
+          </button>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            Contains booking verification details
+          </p>
+        </motion.div>
       )}
       
       {/* ✅ Booking Details Summary */}

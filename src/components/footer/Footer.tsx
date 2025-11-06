@@ -76,7 +76,7 @@ export default function Footer() {
               </a>
             </li>
             <li>
-              <span className="text-gray-400">Phone:</span> +256 701 234 567
+              <span className="text-gray-400">Phone:</span> +256 786 673 468
             </li>
             <li>
               <span className="text-gray-400">Location:</span> Kampala, Uganda

@@ -10,6 +10,8 @@ import FloatingContactButton from "../components/misc/FloatingContactButton";
 // import PlanTripModal from "../components/misc/PlanTripModal";
 import ThemeToggle from "../components/misc/ThemeToggle";
 
+import heroWebp from "../assets/images/hero.webp";
+
 export default function Home() {
   return (
     <main className="relative w-full overflow-x-hidden">
@@ -22,7 +24,7 @@ export default function Home() {
         <meta name="keywords" content="Uganda tours, safaris, travel, Africa, adventure, gorillas" />
         <meta property="og:title" content="Jumuiya Tours" />
         <meta property="og:description" content="Explore Uganda’s hidden gems — from gorilla trekking to cultural tours." />
-        <meta property="og:image" content="/src/assets/images/hero.webp" />
+        <meta property="og:image" content={heroWebp} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://jumuiya-tours.vercel.app" />
       </Helmet>

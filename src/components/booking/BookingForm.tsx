@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useBooking } from "../../hooks/useBooking";
 import { bookingService } from "../../services/bookingService";
@@ -8,8 +8,9 @@ import DatePicker from "./DatePicker";
 import BookingSummary from "./BookingSummary";
 import InputField from "../ui/InputField";
 import {
-  validateBookingForm,
+  validateBookingFormStep,
   hasErrors,
+  validateBookingForm,
 } from "../../utils/validation";
 import type { ValidationError } from "../../utils/validation";
 import type { Booking } from "../../types/booking";
@@ -49,40 +50,44 @@ export default function BookingForm() {
 
   // ---------- Helpers ----------
 
-  const handleChange = (field: keyof Booking, value: any) => {
+  const handleChange = (field: keyof Booking, value: string | number) => {
+    console.log(`🔄 Field ${field} changed to:`, value);
     const updated = { ...formData, [field]: value };
     setFormData(updated);
-    const validation = validateBookingForm(updated);
+    
+    // Use step-specific validation instead of full validation
+    const validation = validateBookingFormStep(updated, step);
     setErrors(validation);
   };
 
-  const fieldError = (field: string) =>
+  const fieldError = (field: string): string | undefined =>
     errors.find((e) => e.field === field)?.message;
 
   const handleDestinationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = destinations.find((d) => d.name === e.target.value);
     if (selected) {
-      const price = (selected as any).price ?? 0;
+      const price = (selected as {price?:number}).price ?? 0;
       const updated = {
         ...formData,
         tourName: selected.name,
         amount: price * (formData.travelers || 1),
       };
       setFormData(updated);
-      setErrors(validateBookingForm(updated));
+      setErrors(validateBookingFormStep(updated, step));
     }
   };
 
   const handleTravelersChange = (value: number) => {
     const selected = destinations.find((d) => d.name === formData.tourName);
-    const basePrice = selected ? (selected as any).price ?? 0 : 0;
+    const basePrice = selected ? (selected as {price?:number}).price ?? 0 : 0;
     const updated = { ...formData, travelers: value, amount: basePrice * value };
     setFormData(updated);
-    setErrors(validateBookingForm(updated));
+    setErrors(validateBookingFormStep(updated, step));
   };
 
   const goNextStep = () => {
-    const stepValidation = validateBookingForm(formData);
+    // Use step-specific validation for the current step
+    const stepValidation = validateBookingFormStep(formData, step);
     if (hasErrors(stepValidation)) {
       setErrors(stepValidation);
       return;
@@ -90,6 +95,36 @@ export default function BookingForm() {
     setStep((prev) => Math.min(prev + 1, 4));
     setErrors([]);
   };
+
+  useEffect(() => {
+    console.log("🔍 CURRENT STEP:", step);
+    console.log("📊 FORM DATA:", formData);
+    console.log("❌ ERRORS:", errors);
+  }, [step, formData, errors]);
+
+  useEffect(() => {
+    console.log("🔍 DATE DEBUG:", {
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      startDateType: typeof formData.startDate,
+      endDateType: typeof formData.endDate,
+      startDateLength: formData.startDate?.length,
+      endDateLength: formData.endDate?.length,
+      hasStart: !!formData.startDate,
+      hasEnd: !!formData.endDate
+    });
+  }, [formData.startDate, formData.endDate]);
+
+  useEffect(() => {
+    console.log("🔍 FORM STATE CHECK:", {
+      hasStartDate: 'startDate' in formData,
+      startDateValue: formData.startDate,
+      hasEndDate: 'endDate' in formData, 
+      endDateValue: formData.endDate,
+      formKeys: Object.keys(formData)
+    });
+  }, [formData.startDate, formData.endDate, formData]);
+
 
   const goPrevStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
@@ -111,7 +146,7 @@ export default function BookingForm() {
       return;
     }
 
-    const basePrice = (selected as any).price ?? 0;
+    const basePrice = (selected as { price?: number }).price ?? 0;
     const requiredAmount = basePrice * (formData.travelers || 1);
 
     if (
@@ -142,6 +177,10 @@ export default function BookingForm() {
         ...updated,
         paid: paymentMethod === "visa",
         amount: updated.amount || requiredAmount,
+      });
+
+      import('./../../services/paymentService').then(({ downloadReceipt }) => {
+        downloadReceipt(receiptUrl, `JumuiyaTours_${finalBooking.tourName}_Receipt.pdf`);
       });
 
       const finalBooking: Booking = {
@@ -283,9 +322,19 @@ export default function BookingForm() {
             label="Travel Dates"
             startDate={formData.startDate || ""}
             endDate={formData.endDate || ""}
-            onChange={(start, end) => {
-              handleChange("startDate", start || "");
-              handleChange("endDate", end || "");
+            onChange={(start:string, end: string) => {
+              console.log("📅 Parent onChange received:", { start, end });
+              // Update both dates at once to avoid state sync issues
+              const updated = { 
+                ...formData, 
+                startDate: start, 
+                endDate: end 
+              };
+              setFormData(updated);
+              
+              // Validate immediately after update
+              const validation = validateBookingFormStep(updated, step);
+              setErrors(validation);
             }}
           />
 
@@ -302,8 +351,8 @@ export default function BookingForm() {
               {destinations.map((d) => (
                 <option key={d.id} value={d.name}>
                   {d.name}
-                  {typeof (d as any).price === "number"
-                    ? ` ($${(d as any).price})`
+                  {typeof (d as { price?: number }).price === "number"
+                    ? ` ($${(d as { price?: number }).price})`
                     : ""}
                 </option>
               ))}

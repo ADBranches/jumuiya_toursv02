@@ -1,10 +1,22 @@
 import { motion } from "framer-motion";
 import React from "react";
 import type { Destination } from "../../types/destination";
-import { useBooking } from "../../hooks/useBooking"; // ⬅️ Add this import
+import { useBooking } from "../../hooks/useBooking";
 
+// ✅ Define proper TypeScript interface
 interface CardProps {
-  data?: any;
+  data?: {
+    title?: string;
+    name?: string;
+    image?: string;
+    description?: string;
+    badge?: string;
+    quote?: string;
+    duration?: string;
+    price?: string;
+    location?: string;
+    id?: string;
+  };
   onClick?: () => void;
   variant?: "destination" | "tour" | "testimonial" | "gallery";
   destination?: Destination;
@@ -16,8 +28,10 @@ const variants = {
 };
 
 const Card: React.FC<CardProps> = ({ data, variant = "destination", onClick }) => {
-  if (!data) return null; // Prevent crash if data is undefined
+  // ✅ Move hook call to the top (React Hook rules)
   const { openBooking } = useBooking();
+
+  if (!data) return null; // Prevent crash if data is undefined
 
   // Fallback-friendly destructuring
   const {
@@ -36,7 +50,7 @@ const Card: React.FC<CardProps> = ({ data, variant = "destination", onClick }) =
   const displayDesc =
     description ||
     quote ||
-    "Discover Uganda’s incredible sights and experiences.";
+    "Discover Uganda's incredible sights and experiences.";
 
   return (
     <motion.div
@@ -74,7 +88,7 @@ const Card: React.FC<CardProps> = ({ data, variant = "destination", onClick }) =
         {variant === "testimonial" ? (
           <>
             <p className="text-gray-700 dark:text-gray-300 italic text-sm leading-relaxed">
-              “{displayDesc}”
+              "{displayDesc}"
             </p>
             <h3 className="mt-4 text-lg font-bold text-green-700 dark:text-green-400">
               {displayTitle}
@@ -104,13 +118,14 @@ const Card: React.FC<CardProps> = ({ data, variant = "destination", onClick }) =
                 )}
                 {variant === "tour" && (
                   <button
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent card onClick
                       openBooking({
                         tourName: title || name,
-                        tourId: data.id,
+                        tourId: data.id as number | string,
                         travelers: 1,
-                      })
-                    }
+                      });
+                    }}
                     className="inline-block mt-4 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition"
                   >
                     Book Tour
