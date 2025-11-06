@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
     plugins: [tailwindcss(), react()],
 
     // ✅ GitHub Pages uses root for custom domain
-    base: '',
+    base: '/',
 
     build: {
       outDir: 'dist',
