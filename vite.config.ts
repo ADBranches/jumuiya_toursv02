@@ -8,8 +8,8 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [tailwindcss(), react()],
     
-    // ✅ Use absolute paths
-    base: '/',
+    // ✅ CRITICAL FIX: Use absolute path for GitHub Pages
+    base: mode === 'production' ? '/' : '/',
     
     build: {
       outDir: 'dist',
@@ -18,8 +18,8 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 1600,
       sourcemap: mode !== 'production',
       
-      // ✅ Optimized for webp
-      assetsInlineLimit: 0, // Don't inline webp images (they're usually larger)
+      // ✅ Optimized for assets
+      assetsInlineLimit: 8192,
       
       rollupOptions: {
         output: {
@@ -28,14 +28,22 @@ export default defineConfig(({ mode }) => {
             utils: ['framer-motion', 'dayjs'],
             pdf: ['jspdf', 'qrcode']
           },
-          // ✅ Webp-specific asset handling
+          // ✅ Proper asset handling
           assetFileNames: (assetInfo) => {
             if (!assetInfo.name) return 'assets/[name]-[hash][extname]'
-            const isWebp = assetInfo.name.toLowerCase().endsWith('.webp')
-            return isWebp 
-              ? 'assets/images/[name]-[hash][extname]'
-              : 'assets/[name]-[hash][extname]'
-          }
+            const ext = assetInfo.name.split('.').pop()?.toLowerCase() || ''
+            
+            if (/png|jpe?g|gif|svg|webp|ico/i.test(ext)) {
+              return 'assets/images/[name]-[hash][extname]'
+            }
+            if (/mp4|webm|ogg/i.test(ext)) {
+              return 'assets/videos/[name]-[hash][extname]'
+            }
+            return 'assets/[name]-[hash][extname]'
+          },
+          // ✅ Ensure proper MIME types
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js'
         }
       }
     },
