@@ -13,7 +13,6 @@
     "preview": "vite preview --host",
     "deploy": "npm run build && gh-pages -d dist",
     "verify": "./scripts/verify-deployment.sh"
-
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -30,6 +29,7 @@
     "react-helmet-async": "^2.0.5",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.9.5",
+    "vite-plugin-pwa": "^1.1.0",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
