@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+// import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Destinations from "./pages/Destinations";
 import Gallery from "./pages/Gallery";
@@ -12,7 +13,7 @@ import BookingSuccess from "./pages/BookingSuccess";
 
 export default function AppRoutes() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Navbar />
 
       <Routes>
@@ -29,6 +30,6 @@ export default function AppRoutes() {
 
       {/* ✅ Fancy floating WhatsApp button visible everywhere */}
       <WhatsAppButton />
-    </BrowserRouter>
+    </HashRouter>
   );
 }
