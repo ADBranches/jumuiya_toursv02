@@ -86,14 +86,39 @@ export default function BookingForm() {
   };
 
   const goNextStep = () => {
-    // Use step-specific validation for the current step
+    // ✅ Clear previous traveler errors first
+    const newErrors: ValidationError[] = [];
+
+    if (!formData.travelers || formData.travelers < 1) {
+      newErrors.push({
+        field: "travelers",
+        message: "Please enter at least 1 traveler.",
+      });
+    }
+
+    if (formData.travelers && formData.travelers > 10) {
+      newErrors.push({
+        field: "travelers",
+        message: "Maximum 10 travelers allowed per booking.",
+      });
+    }
+
+    // ✅ If traveler validation failed, stop immediately
+    if (newErrors.length > 0) {
+      setErrors(newErrors);
+      return; // prevent moving forward
+    }
+
+    // ✅ Run your normal step-specific validation
     const stepValidation = validateBookingFormStep(formData, step);
     if (hasErrors(stepValidation)) {
       setErrors(stepValidation);
       return;
     }
-    setStep((prev) => Math.min(prev + 1, 4));
+
+    // ✅ Advance only if clean
     setErrors([]);
+    setStep((prev) => Math.min(prev + 1, 4));
   };
 
   useEffect(() => {
@@ -133,6 +158,16 @@ export default function BookingForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors([]);
+
+    if (!formData.travelers || formData.travelers < 1) {
+      setErrors([{ field: "travelers", message: "Please enter at least 1 traveler." }]);
+      return;
+    }
+
+    if (formData.travelers > 10) {
+      setErrors([{ field: "travelers", message: "Maximum 10 travelers allowed per booking." }]);
+      return;
+    }
 
     const validation = validateBookingForm(formData);
     if (hasErrors(validation)) {
@@ -304,14 +339,48 @@ export default function BookingForm() {
           />
 
           <InputField
-            label="Number of Travelers"
-            type="number"
-            value={formData.travelers || 1}
-            onChange={(e) =>
-              handleTravelersChange(parseInt(e.target.value) || 1)
-            }
-            error={fieldError("travelers")}
-          />
+              label="Number of Travelers"
+              type="tel"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              value={formData.travelers?.toString() ?? ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Allow user to fully delete input without forcing 1
+                if (value === "") {
+                  setFormData((prev) => ({ ...prev, travelers: undefined }));
+                  return;
+                }
+
+                const clean = value.replace(/\D/g, "");
+                const parsed = parseInt(clean, 10);
+
+                if (!isNaN(parsed)) {
+                  setFormData((prev) => ({ ...prev, travelers: parsed }));
+                }
+              }}
+              onBlur={(e) => {
+                const clean = e.target.value.replace(/\D/g, "");
+                const parsed = parseInt(clean, 10);
+
+                // Enforce 1–10 on blur
+                if (isNaN(parsed) || parsed < 1) {
+                  handleTravelersChange(1);
+                } else if (parsed > 10) {
+                  handleTravelersChange(10);
+                } else {
+                  handleTravelersChange(parsed);
+                }
+              }}
+              error={fieldError("travelers")}
+            />
+
+            {/* ✅ Inline warning */}
+            {formData.travelers && formData.travelers > 10 && (
+              <p className="text-yellow-400 text-sm mt-1">
+                ⚠️ Maximum 10 travelers allowed per booking.
+              </p>
+            )}
         </div>
       )}
 
@@ -447,7 +516,12 @@ export default function BookingForm() {
           <button
             type="button"
             onClick={goNextStep}
-            className="ml-auto px-6 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white"
+            disabled={errors.some((e) => e.field === "travelers")}
+            className={`ml-auto px-6 py-2 rounded-lg text-white transition ${
+              errors.some((e) => e.field === "travelers")
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-700"
+            }`}
           >
             Next
           </button>

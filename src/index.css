@@ -3,6 +3,7 @@
 :root {
   --color-primary: #047857;
   --color-accent: #f59e0b;
+  --vh: 100vh;
 }
 
 /* Global styles */
@@ -23,4 +24,11 @@ html {
 }
 section {
   scroll-margin-top: 80px;
+}
+
+
+@supports (height: 100dvh) {
+  :root {
+    --vh: 100dvh;
+  }
 }

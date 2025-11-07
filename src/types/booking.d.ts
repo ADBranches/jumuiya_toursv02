@@ -15,7 +15,7 @@ export interface Booking {
   countryCode?: string;
 
   /** Number of travelers */
-  travelers: number;
+  travelers?: number;
 
   /** Linked tour details */
   tourId?: number;

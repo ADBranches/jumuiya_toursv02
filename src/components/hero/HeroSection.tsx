@@ -42,7 +42,12 @@ export default function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-black text-white"
+      className="relative w-full h-screen overflow-hidden flex flex-col justify-center bg-black text-white"
+      style={{
+        height: isMobile
+          ? "calc(var(--vh, 1vh) * 100)" // only apply fix on mobile
+          : undefined, // keep Tailwind's h-screen on desktop
+      }}
     >
       {/* 🔹 ENHANCED RESPONSIVE VIDEO ELEMENT */}
       <video
@@ -61,11 +66,10 @@ export default function HeroSection() {
             : "object-cover"
         }`}
         style={{
-          height: isMobile ? "100dvh" : "100vh", // ✅ fixes mobile viewport height issues
+          height: "100%",
           width: "100%",
           objectPosition: "center center",
           backgroundColor: "black",
-          maxHeight: "100vh",
         }}
       >
       
@@ -85,7 +89,7 @@ export default function HeroSection() {
 
       {/* 🔹 KEEP YOUR EXISTING DESKTOP CONTENT - NO CHANGES */}
       <motion.div
-        className="relative z-10 px-6 text-center max-w-3xl mb-16 md:mb-20"
+        className="relative z-10 px-6 text-center max-w-3xl mx-auto mb-16 md:mb-20"
         initial={{ opacity: 0, y: 60 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
