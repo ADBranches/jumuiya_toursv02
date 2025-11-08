@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import HeroSection from "../components/hero/HeroSection";
-import FeaturedDestinations from "../components/sections/FeaturedDestinations";
-import PopularTours from "../components/sections/PopularTours";
+// import FeaturedDestinations from "../components/sections/FeaturedDestinations";
+// import PopularTours from "../components/sections/PopularTours";
 import Testimonials from "../components/sections/Testimonials";
 import AboutSection from "../components/sections/AboutSection";
 import GallerySection from "../components/sections/GallerySection";
@@ -9,6 +9,7 @@ import ContactSection from "../components/sections/ContactSection";
 import FloatingContactButton from "../components/misc/FloatingContactButton";
 import ThemeToggle from "../components/misc/ThemeToggle";
 import { useTranslate } from "../hooks/useTranslate"; // ✅ new import
+import DebugInfo from "../components/DebugInfo";
 
 import heroWebp from "../assets/images/hero.webp";
 
@@ -40,14 +41,15 @@ export default function Home() {
 
       {/* 🌍 Main site sections */}
       <HeroSection />
-      <FeaturedDestinations />
-      <PopularTours />
-      <Testimonials />
+      {/* <FeaturedDestinations /> */}
+      {/* <PopularTours /> */}
       <AboutSection />
+      <Testimonials />
       <GallerySection />
       <ContactSection />
       <FloatingContactButton />
       <ThemeToggle />
+      <DebugInfo />
     </main>
   );
 }

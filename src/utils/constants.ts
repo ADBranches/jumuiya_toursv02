@@ -143,26 +143,32 @@ export const gallery = [
   {
     src: bwindiWebp, 
     alt: "Bwindi Impenetrable Forest",
+    category: "Wildlife",
   },
   {
     src: murchisonWebp, 
     alt: "Murchison Falls National Park",
+    category: "Wildlife",
   },
   {
     src: queenElizabethWebp, 
     alt: "Queen Elizabeth National Park",
+    category: "Wildlife",
   },
   {
     src: lakeBunyonyiWebp,  
     alt: "Lake Bunyonyi",
+    category: "Landscape",
   },
   {
     src: rwenzoriWebp, 
     alt: "Rwenzori Mountains",
+    category: "Wildlife",
   },
   {
     src: sipiFallsWebp, 
     alt: "Sipi Falls",
+    category: "Adventure",
   },
 ];
 
@@ -173,7 +179,6 @@ export const colors = {
   dark: "#111827",     // Deep Gray
   light: "#ffffff",    // White
 };
-
 
 export const countries = [
   { name: "Uganda", dial_code: "+256", code: "UG" },

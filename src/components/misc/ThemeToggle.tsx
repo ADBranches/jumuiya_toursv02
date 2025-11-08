@@ -12,10 +12,14 @@ export default function ThemeToggle() {
       animate={{ scale: 1 }}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
-      className="fixed bottom-6 left-6 p-4 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-300 dark:border-gray-700 text-green-600 dark:text-yellow-400 z-50"
-      title="Toggle Theme"
+      className="p-2 bg-white/20 dark:bg-gray-700 rounded-lg border border-gray-300 dark:border-gray-600 text-green-600 dark:text-yellow-400 hover:bg-white/30 dark:hover:bg-gray-600 transition-colors flex items-center justify-center gap-2 w-full sm:w-auto"
+      title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+      translate="no"
     >
-      {theme === "dark" ? <Sun size={22} /> : <Moon size={22} />}
+      {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+      <span className="hidden sm:inline text-sm font-medium">
+        {theme === "dark" ? "Light" : "Dark"}
+      </span>
     </motion.button>
   );
 }

@@ -3,7 +3,7 @@ import { useLanguageStore } from "../store/useLanguageStore";
 import { translationService } from "../services/translationService";
 
 export function useTranslate(text: string, sourceLang = "en") {
-  const { lang } = useLanguageStore();
+  const { lang, trigger } = useLanguageStore(); // ✅ Added trigger to dependencies
   const [translated, setTranslated] = useState(text);
 
   useEffect(() => {
@@ -22,15 +22,16 @@ export function useTranslate(text: string, sourceLang = "en") {
         const result = await translationService.translate(text, lang, sourceLang);
         if (active) setTranslated(result);
       } catch {
-        setTranslated(text); // fallback if translation fails
+        if (active) setTranslated(text); // fallback if translation fails
       }
     }
 
     run();
+    
     return () => {
       active = false;
     };
-  }, [text, lang, sourceLang]);
+  }, [text, lang, sourceLang, trigger]); // ✅ FIX: Added trigger to force re-translation
 
   return translated;
 }

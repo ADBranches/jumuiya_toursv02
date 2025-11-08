@@ -77,6 +77,19 @@ export default function HeroSection() {
         }`}
       />
 
+      {/* 🎉 Seasonal Banner - NEW ADDITION */}
+      {/* <motion.div
+        className="relative z-20 bg-gradient-to-r from-green-600 to-yellow-500 text-white py-3 text-center"
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.8 }}
+      >
+        <div className="max-w-7xl mx-auto px-4">
+          <span className="font-semibold">🎊 Early Bird Special:</span> 
+          <span className="ml-2 font-bold">Book 2025 Adventures Now & Save 15%!</span>
+        </div>
+      </motion.div> */}
+
       {/* Content */}
       <motion.div
         className="relative z-10 px-6 text-center max-w-3xl mx-auto mb-16 md:mb-20"

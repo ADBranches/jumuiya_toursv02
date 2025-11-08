@@ -23,13 +23,13 @@ export default function DestinationFilters({ onFilter }: FiltersProps) {
       });
     }, 250);
     return () => clearTimeout(t);
-  }, [search, region, difficulty]);
+  }, [search, region, difficulty, onFilter]);
 
   return (
     <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-10">
       {/* Search box */}
       <input
-        type="text"
+        type="text" 
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search destination..."

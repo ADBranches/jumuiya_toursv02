@@ -73,23 +73,30 @@ export default function Navbar() {
 
       {/* 🔹 Mobile Menu */}
       {open && (
-        <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-          {navLinks.map((link) => (
-            <button
-              key={link.name}
-              onClick={() => handleNavClick(link)}
-              className={`block w-full text-left py-3 px-6 ${
-                location.pathname === link.path
-                  ? "text-green-600 dark:text-lime-400"
-                  : "text-gray-800 dark:text-gray-200"
-              } hover:bg-green-50 dark:hover:bg-gray-800 transition-colors`}
-            >
-              {link.name}
-            </button>
-          ))}
-          <div className="flex justify-between items-center px-6 py-3">
-            <LanguageSwitcher />
-            <ThemeToggle />
+        <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 absolute top-full left-0 w-full shadow-lg">
+          <div className="max-h-[80vh] overflow-y-auto">
+            {navLinks.map((link) => (
+              <button
+                key={link.name}
+                onClick={() => handleNavClick(link)}
+                className={`block w-full text-left py-4 px-6 ${
+                  location.pathname === link.path
+                    ? "text-green-600 dark:text-lime-400 bg-green-50 dark:bg-gray-800"
+                    : "text-gray-800 dark:text-gray-200"
+                } hover:bg-green-50 dark:hover:bg-gray-800 transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0`}
+              >
+                {link.name}
+              </button>
+            ))}
+            {/* ✅ FIX: Better mobile controls layout */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+              <div className="w-full sm:w-auto">
+                <LanguageSwitcher />
+              </div>
+              <div className="w-full sm:w-auto">
+                <ThemeToggle />
+              </div>
+            </div>
           </div>
         </div>
       )}
