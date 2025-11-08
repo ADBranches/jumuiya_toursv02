@@ -1,25 +1,30 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import LanguageSwitcher from "./LanguageSwitcher";
 import ThemeToggle from "../misc/ThemeToggle";
-import { useSmoothScroll } from "../../hooks/useSmoothScroll"; // ✅ new import
+import { useSmoothScroll } from "../../hooks/useSmoothScroll";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const scrollToSection = useSmoothScroll(); // ✅ reusable hook
+  const navigate = useNavigate();
+  const location = useLocation();
+  const scrollToSection = useSmoothScroll();
 
-  // ✅ Define links with target section IDs
   const navLinks = [
-    { name: "Home", id: "hero" },
-    { name: "Destinations", id: "destinations" },
-    { name: "Gallery", id: "gallery" },
-    { name: "About", id: "about" },
-    { name: "Contact", id: "contact" },
+    { name: "Home", id: "hero", path: "/" },
+    { name: "Destinations", id: "destinations", path: "/destinations" },
+    { name: "Gallery", id: "gallery", path: "/gallery" },
+    { name: "About", id: "about", path: "/about" },
+    { name: "Contact", id: "contact", path: "/contact" },
   ];
 
-  // ✅ Handle click: scroll & close mobile menu
-  const handleNavClick = (id: string) => {
-    scrollToSection(id);
+  const handleNavClick = (link: { id: string; path: string }) => {
+    if (location.pathname === "/" && link.path === "/") {
+      scrollToSection(link.id);
+    } else {
+      navigate(link.path);
+    }
     setOpen(false);
   };
 
@@ -28,8 +33,11 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
         {/* 🔹 Logo */}
         <button
-          onClick={() => scrollToSection("hero")}
-          className="text-2xl font-bold text-green-700 focus:outline-none"
+          onClick={() => {
+            if (location.pathname !== "/") navigate("/");
+            else scrollToSection("hero");
+          }}
+          className="text-2xl font-bold text-green-700 dark:text-lime-400 focus:outline-none"
         >
           Jumuiya<span className="text-yellow-500">Tours</span>
         </button>
@@ -39,8 +47,12 @@ export default function Navbar() {
           {navLinks.map((link) => (
             <button
               key={link.name}
-              onClick={() => handleNavClick(link.id)}
-              className="font-medium text-gray-700 dark:text-gray-200 hover:text-green-600 transition-colors"
+              onClick={() => handleNavClick(link)}
+              className={`font-medium ${
+                location.pathname === link.path
+                  ? "text-green-600 dark:text-lime-400"
+                  : "text-gray-700 dark:text-gray-200"
+              } hover:text-green-600 dark:hover:text-lime-400 transition-colors`}
             >
               {link.name}
             </button>
@@ -65,8 +77,12 @@ export default function Navbar() {
           {navLinks.map((link) => (
             <button
               key={link.name}
-              onClick={() => handleNavClick(link.id)}
-              className="block w-full text-left py-3 px-6 text-gray-800 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-gray-800 transition-colors"
+              onClick={() => handleNavClick(link)}
+              className={`block w-full text-left py-3 px-6 ${
+                location.pathname === link.path
+                  ? "text-green-600 dark:text-lime-400"
+                  : "text-gray-800 dark:text-gray-200"
+              } hover:bg-green-50 dark:hover:bg-gray-800 transition-colors`}
             >
               {link.name}
             </button>

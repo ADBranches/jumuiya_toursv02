@@ -4,6 +4,9 @@ import "./index.css";
 import App from "./App";
 import BookingModal from "./components/booking/BookingModal";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import HydrationGate from "./components/misc/HydrationGate"; // ✅ added
+// import { HydratedRouter } from "react-router-dom";
+import GlobalTranslator from "./components/misc/GlobalTranslator";
 
 // ✅ 1️⃣ Fix for mobile address bar resizing (run before React mounts)
 function updateVh() {
@@ -28,10 +31,13 @@ window.addEventListener("resize", () => {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ErrorBoundary>
-      <>
-        <App />
-        <BookingModal />
-      </>
+      <HydrationGate>
+        <>
+          <App />
+          <BookingModal />
+          <GlobalTranslator />
+        </>
+    </HydrationGate>
     </ErrorBoundary>
   </StrictMode>
 );

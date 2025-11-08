@@ -24,6 +24,7 @@ export default function AppRoutes() {
         <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<NotFound />} />
         <Route path="/booking-success" element={<BookingSuccess />} />
+        <Route path="/destinations" element={<Destinations />} />
       </Routes>
 
       <Footer />
