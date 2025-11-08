@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content="0; url=/" />
+    <script>
+      // Redirect all non-root requests to index.html while preserving the path
+      const redirect = window.location.protocol + '//' + window.location.host + '/#' + window.location.pathname;
+      window.location.replace(redirect);
+    </script>
+  </head>
+  <body></body>
+</html>
+
