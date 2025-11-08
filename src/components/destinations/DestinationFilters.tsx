@@ -15,15 +15,16 @@ export default function DestinationFilters({ onFilter }: FiltersProps) {
 
   // Debounce filter updates for smoother UX
   useEffect(() => {
-    const t = setTimeout(() => {
-      onFilter({
-        search: search.trim() || undefined,
-        region: region !== "All" ? region : undefined,
-        difficulty: difficulty !== "All" ? difficulty : undefined,
-      });
-    }, 250);
-    return () => clearTimeout(t);
-  }, [search, region, difficulty, onFilter]);
+  const t = setTimeout(() => {
+    onFilter({
+      search: search.trim() || undefined,
+      region: region !== "All" ? region : undefined,
+      difficulty: difficulty !== "All" ? difficulty : undefined,
+    });
+  }, 300);
+  return () => clearTimeout(t);
+  // ⚠️ intentionally omit `onFilter` since it's memoized now
+}, [search, region, difficulty, onFilter]);
 
   return (
     <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-10">
