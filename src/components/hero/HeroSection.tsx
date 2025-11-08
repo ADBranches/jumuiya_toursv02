@@ -21,9 +21,30 @@ export default function HeroSection() {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
-      if (videoRef.current && mobile) {
-        videoRef.current.preload = "metadata";
-        videoRef.current.playsInline = true;
+      if (videoRef.current) {
+        const video = videoRef.current;
+        video.muted = true;
+        video.playsInline = true;
+        video.setAttribute("muted", "");
+        video.setAttribute("playsinline", "");
+        video.autoplay = true;
+
+        // On mobile, some browsers require a play() trigger
+        if (mobile) {
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {
+              console.warn("Autoplay prevented — waiting for user interaction.");
+              const handleUserGesture = () => {
+                video.play().catch(() => {});
+                document.removeEventListener("touchstart", handleUserGesture);
+                document.removeEventListener("click", handleUserGesture);
+              };
+              document.addEventListener("touchstart", handleUserGesture);
+              document.addEventListener("click", handleUserGesture);
+            });
+          }
+        }
       }
     };
     checkMobile();
