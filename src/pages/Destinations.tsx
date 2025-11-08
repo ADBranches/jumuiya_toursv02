@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { destinationService } from "../services/destinationService";
 import type { Destination } from "../types/destination";
@@ -11,7 +11,7 @@ export default function Destinations() {
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchDestinations = async (filters?: {
+  const fetchDestinations = useCallback(async (filters?: {
     region?: string;
     difficulty?: string;
     search?: string;
@@ -20,11 +20,12 @@ export default function Destinations() {
     const data = await destinationService.getAll(filters);
     setDestinations(data);
     setLoading(false);
-  };
+  }, []);
+
 
   useEffect(() => {
     fetchDestinations();
-  }, []);
+  }, [fetchDestinations ]);
 
   return (
     <motion.main
